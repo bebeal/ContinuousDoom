@@ -11,12 +11,11 @@ class MemoryBuffer:
         actions, rewards, next observations, and done values.
         capacity: max amount of values we want to store in the buffer
     """
-    def __init__(self, buffer_size, obs_shape, action_dim, device=torch.device("cpu")):
+    def __init__(self, buffer_size, obs_shape, device=torch.device("cpu")):
         self.buffer_size = buffer_size
         self.episode_start = 0
         self.ptr = 0
         self.obs_shape = obs_shape
-        self.action_dim = action_dim
         self.observations = np.zeros((self.buffer_size,) + self.obs_shape, dtype=np.float32)
         self.actions = np.zeros(self.buffer_size, dtype=np.float32)
         self.actions2 = np.zeros((self.buffer_size,1), dtype=np.float32)
@@ -26,7 +25,6 @@ class MemoryBuffer:
         self.values = np.zeros(self.buffer_size, dtype=np.float32)
         self.advantages = np.zeros(self.buffer_size, dtype=np.float32)
         self.returns = np.zeros(self.buffer_size, dtype=np.float32)
-        # self.time = np.zeros((self.buffer_size,1) , dtype=np.float32)
         self.device = device
 
     # Number of records in the buffer
@@ -43,12 +41,10 @@ class MemoryBuffer:
         self.log_probs2[self.ptr] = gaussian_log_prob
         self.rewards[self.ptr] = reward
         self.values[self.ptr] = value
-        # self.time[self.ptr] = time
         self.ptr += 1
 
     # Receive every transition sequence currently storing
     def get(self):
-        # , torch.from_numpy(self.time)
         return torch.from_numpy(self.observations), torch.from_numpy(self.actions), torch.from_numpy(self.log_probs), torch.from_numpy(self.actions2), torch.from_numpy(self.log_probs2), torch.from_numpy(self.values), torch.from_numpy(self.advantages), torch.from_numpy(self.returns)
 
     def add_episode(self, gae, last_value):
@@ -72,9 +68,8 @@ class MemoryBuffer:
         self.values = np.zeros(self.buffer_size, dtype=np.float32)
         self.advantages = np.zeros(self.buffer_size, dtype=np.float32)
         self.returns = np.zeros(self.buffer_size, dtype=np.float32)
-        # self.time = np.zeros((self.buffer_size, 1), dtype=np.float32)
 
-    def save(self, name='memory_buffer.pkl', directory='saves'):
+    def save(self, name="memory_buffer.pkl", directory="log"):
         l = []
         l.append(self.observations)
         l.append(self.actions)
@@ -88,11 +83,11 @@ class MemoryBuffer:
         l.append(self.time)
         l.append(self.episode_start)
         l.append(self.ptr)
-        with open(path.join(directory, name), 'wb') as file:
+        with open(path.join(directory, name), "wb") as file:
             pkl.dump(l, file)
 
-    def load(self, name='memory_buffer.pkl', directory='saves'):
-        with open(path.join(directory, name), 'rb') as file:
+    def load(self, name="memory_buffer.pkl", directory="saves"):
+        with open(path.join(directory, name), "rb") as file:
             l = pkl.load(file)
         self.observations = l[0]
         self.actions = l[1]

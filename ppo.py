@@ -32,6 +32,7 @@ class GAE:
         advantages = discounted_cumsum(deltas, self.gamma * self.lmbda)
         returns = discounted_cumsum(rewards, self.gamma)[:-1]
 
+        # normalize here or in mini batch...?
         # advantages_mean, advantages_std = np.mean(advantages), np.std(advantages)
         # advantages = (advantages - advantages_mean) / (advantages_std + 1e-8)
 
@@ -39,14 +40,15 @@ class GAE:
 
 
 class PPO:
-    def __init__(self, logger, k_epochs, mini_batch_size, entropy_coeff, value_coeff, policy_clip=-1, value_clip=-1,
-                 device=torch.device("cpu")):
+    def __init__(self, logger, k_epochs, mini_batch_size, entropy_coeff, value_coeff, actor_coeff, grad_clip=0.5, policy_clip=-1, value_clip=-1, device=torch.device("cpu")):
         super().__init__()
         self.logger = logger
         self.k_epochs = k_epochs
         self.mini_batch_size = mini_batch_size
         self.entropy_coeff = entropy_coeff
         self.value_coeff = value_coeff
+        self.actor_coeff = actor_coeff
+        self.grad_clip = grad_clip
         self.policy_clip = policy_clip
         self.value_clip = value_clip
         self.device = device
@@ -61,34 +63,29 @@ class PPO:
             return -surr1.mean()
 
     def get_value_loss(self, values, returns, old_values):
+        # could try huber, less sensitive to outliers, but "outliers" can occur as a good training signal (new exploration)
         l1 = F.mse_loss(returns, values)
         if self.value_clip != -1:
             l2 = F.mse_loss(returns, old_values + torch.clip(values - old_values, -self.value_clip, self.value_clip))
             return torch.max(l1, l2)
         else:
             return l1
-        # if self.value_clip != -1:
-        #     return F.mse_loss(returns, old_values + torch.clip(values - old_values, -self.value_clip, self.value_clip))
-        # else:
-        #     return F.mse_loss(returns, values)
 
     def update(self, agent, batch):
         observations, categorical_actions, old_categorical_log_probs, gaussian_actions, old_gaussian_log_probs, old_values, advantages, returns = batch
         categorical_actions = categorical_actions.long()
 
         for k in range(self.k_epochs):
-            tot_loss, ent_loss, act_loss, cri_loss = self.mini_batch_update(agent, observations, categorical_actions,
-                                                                            old_categorical_log_probs, gaussian_actions,
-                                                                            old_gaussian_log_probs, old_values,
-                                                                            advantages, returns)
-            self.logger.add_scalar('loss/total_loss', torch.Tensor(tot_loss).mean().cpu().numpy().item(), global_step=self.logger.total_time)
-            self.logger.add_scalar('loss/entropy_loss', torch.Tensor(ent_loss).mean().cpu().numpy().item(), global_step=self.logger.total_time)
-            self.logger.add_scalar('loss/actor_loss', torch.Tensor(act_loss).mean().cpu().numpy().item(), global_step=self.logger.total_time)
-            self.logger.add_scalar('loss/critic_loss', torch.Tensor(cri_loss).mean().cpu().numpy().item(), global_step=self.logger.total_time)
-            self.logger.add_scalar('train/std', torch.exp(agent.actor.gaussian_actor.log_std).mean().item(), global_step=self.logger.total_time)
+            tot_loss, ent_loss, act_loss, cri_loss = self.mini_batch_update(agent, observations, categorical_actions, old_categorical_log_probs, gaussian_actions, old_gaussian_log_probs, old_values, advantages, returns)
+            self.logger.add_scalar("loss/total_loss", torch.Tensor(tot_loss).mean().cpu().numpy().item(), global_step=self.logger.total_time)
+            self.logger.add_scalar("loss/entropy_loss", torch.Tensor(ent_loss).mean().cpu().numpy().item(), global_step=self.logger.total_time)
+            self.logger.add_scalar("loss/actor_loss", torch.Tensor(act_loss).mean().cpu().numpy().item(), global_step=self.logger.total_time)
+            self.logger.add_scalar("loss/critic_loss", torch.Tensor(cri_loss).mean().cpu().numpy().item(), global_step=self.logger.total_time)
+            self.logger.add_scalar("train/std", torch.exp(agent.actor.gaussian_actor.log_std).mean().item(), global_step=self.logger.total_time)
             self.logger.updates += 1
 
     def mini_batch_update(self, agent, observations, categorical_actions, old_categorical_log_probs, gaussian_actions, old_gaussian_log_probs, old_values, advantages, returns):
+        # break single batch update into mini batches to fit on gpu
         total_loss_log = []
         entropy_loss_log = []
         actor_loss_log = []
@@ -115,25 +112,23 @@ class PPO:
             returns_batch = returns[sample_indices[start_idx: start_idx + mini_batch_size]].to(self.device)
             old_values_batch = old_values[sample_indices[start_idx: start_idx + mini_batch_size]].to(self.device)
 
+            # normalize here or when calculating returns...?
             advantages_batch = (advantages_batch - advantages_batch.mean()) / (advantages_batch.std() + 1e-8)
 
             new_categorical_log_probs, categorical_entropy, new_gaussian_log_probs, gaussian_entropy, values = agent.evaluate_actions(observation_batch, categorical_action_batch, gaussian_action_batch)
-
+            # losses
             categorical_loss = self.get_actor_loss(new_categorical_log_probs, old_categorical_log_probs_batch, advantages_batch)
             gaussian_loss = self.get_actor_loss(new_gaussian_log_probs, old_gaussian_log_probs_batch, advantages_batch)
-            actor_loss = (categorical_loss + gaussian_loss) * 0.5
-            # actor_loss = (categorical_loss + gaussian_loss)
-
+            actor_loss = (categorical_loss + gaussian_loss)
             entropy_loss = (-torch.mean(categorical_entropy) - torch.mean(gaussian_entropy)) * 0.5
-            # entropy_loss = (-torch.mean(categorical_entropy) - torch.mean(gaussian_entropy))
-
             values = values.view(-1)
             critic_loss = self.get_value_loss(values, returns_batch, old_values_batch)
-            total_loss = actor_loss + self.entropy_coeff * entropy_loss + critic_loss * self.value_coeff
+            total_loss = self.actor_coeff * actor_loss + self.value_coeff * critic_loss + self.entropy_coeff * entropy_loss
 
+            # update
             agent.optimizer.zero_grad()
             total_loss.backward()
-            torch.nn.utils.clip_grad_norm_(agent.parameters(), 0.5)
+            torch.nn.utils.clip_grad_norm_(agent.parameters(), self.grad_clip)
             agent.optimizer.step()
             if agent.scheduler:
                 agent.scheduler.step()

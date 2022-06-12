@@ -25,3 +25,9 @@ def base_buttons_with_concat(num_discrete, concat):
         buttons = np.append(buttons, [np.zeros(buttons[i].shape)], axis=0)
         buttons[-1][concat[i]] = 1
     return buttons.astype(np.compat.long)
+
+
+def create_action(mouse, button, buttons):
+    action = buttons[button].copy()
+    action[0] = mouse[0]
+    return np.array(action)

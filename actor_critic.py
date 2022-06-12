@@ -140,28 +140,29 @@ class Critic(nn.Module):
 
 
 class ActorCritic(nn.Module):
-    def __init__(self, input_dims, h_dim, num_discrete, num_continuous, lr=0.001, T_max=1000000, log_std_init=0,
-                 feature_extractor=NatureCNN):
+    def __init__(self, input_dims, h_dim, num_discrete, num_continuous, lr=0.001, T_max=1000000, log_std_init=0, weight_decay=1e-6, feature_extractor=NatureCNN):
         super().__init__()
         self.feature_extractor = nn.Sequential(
             feature_extractor(input_dims, h_dim),
         )
-        self.actor = Actor(h_dim=h_dim, num_discrete=num_discrete, num_continuous=num_continuous,
-                           log_std_init=log_std_init)
+        self.actor = Actor(h_dim=h_dim, num_discrete=num_discrete, num_continuous=num_continuous, log_std_init=log_std_init)
         self.critic = Critic(h_dim=h_dim)
-        self.optimizer = optim.AdamW(self.parameters(), lr=lr, weight_decay=1e-6)
+        self.optimizer = optim.AdamW(self.parameters(), lr=lr, weight_decay=weight_decay)
         self.scheduler = optim.lr_scheduler.CosineAnnealingLR(self.optimizer, T_max=T_max)
-        # self.scheduler = None
         weights_init(self.feature_extractor, np.sqrt(2))
 
     def evaluate_actions(self, obs, categorical_actions, gaussian_actions):
         features = self.feature_extractor(obs)
-        categorical_log_probs, categorical_entropy, gaussian_log_probs, gaussian_entropy = self.actor.evaluate_actions(
-            features, categorical_actions, gaussian_actions)
+        categorical_log_probs, categorical_entropy, gaussian_log_probs, gaussian_entropy = self.actor.evaluate_actions(features, categorical_actions, gaussian_actions)
         values = self.critic(features)
         return categorical_log_probs, categorical_entropy, gaussian_log_probs, gaussian_entropy, values
 
     def predict(self, obs):
+        """
+        Inference mode
+        Only queries actor, not critic
+        uses just means, no std for distributions if applicable
+        """
         with torch.no_grad():
             features = self.feature_extractor(obs)
             return self.actor.predict(features)
@@ -173,6 +174,10 @@ class ActorCritic(nn.Module):
         return categorical_actions, categorical_log_probs, gaussian_actions, gaussian_log_probs, values
 
     def predict_values(self, obs):
+        """
+        Inference mode
+        Only queries critic, not actor
+        """
         with torch.no_grad():
             features = self.feature_extractor(obs)
             return self.critic(features)

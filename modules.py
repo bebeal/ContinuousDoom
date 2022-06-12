@@ -7,6 +7,7 @@ Residuals
 References: https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py
 '''
 
+
 class Residual(nn.Module):
     def __init__(self, block):
         super().__init__()
@@ -50,7 +51,6 @@ class ConvFeatureExtractor(nn.Module):
         self.initial = nn.Sequential(
             nn.Conv2d(input_dims, 16, kernel_size=7, stride=2, padding=0),
             nn.GELU(),
-            # nn.BatchNorm2d(16),
             nn.LayerNorm((16, 117, 157)),
         )
         self.l1 = nn.Conv2d(16, 32, kernel_size=5, stride=2, padding=0)
@@ -65,8 +65,8 @@ class ConvFeatureExtractor(nn.Module):
             nn.GELU(),
             nn.Conv2d(512, 512, kernel_size=3, padding=0),
             nn.GELU(),
-            nn.AdaptiveAvgPool2d((1, 1)),  # shape after global average pooling = (bs, h_dim, 1, 1)
-            nn.Flatten(),  # shape after flatten = (bs, h_dim)
+            nn.AdaptiveAvgPool2d((1, 1)),
+            nn.Flatten(),
             nn.Linear(512, output_dims),
             nn.ReLU(True),
         )
