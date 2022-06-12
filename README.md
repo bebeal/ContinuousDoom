@@ -33,9 +33,9 @@ Additionally, we are using an actor-critic style agent where the actor and the c
 
 The model consists of 3 main components, a feature extractor, a critic, and an actor. The feature extractor takes in the state of the environment and outputs a feature vector. During training the feature vector is passed to both the critic, which outputs a value prediction of "how good" it is to be in the current state, and the actor, which outputs the next action to take in the environment.
 
-<img src="https://user-images.githubusercontent.com/42706447/173233189-be2b805a-f96c-42ce-975d-ac424cc515e6.png" class="center" style="width: 50% !important">
-![ac](https://user-images.githubusercontent.com/42706447/173233189-be2b805a-f96c-42ce-975d-ac424cc515e6.png)
-
+<p align="center">
+<img src="https://user-images.githubusercontent.com/42706447/173233189-be2b805a-f96c-42ce-975d-ac424cc515e6.png">
+</p>
 
 The main idea behind an actor critic model is that critic parametrizes the value function $V(s)$ which can be used to critique the actor and the actor parametrizes the policy $\pi$ which determines how to act in the environment.
 
@@ -43,9 +43,6 @@ The main idea behind an actor critic model is that critic parametrizes the value
 
 The feature extractor is mostly a convolutional network, with residual connections, and a final linear/flattening layer to form the feature vector.
 
-<p align="center">
-<img src="https://user-images.githubusercontent.com/42706447/173233189-be2b805a-f96c-42ce-975d-ac424cc515e6.png" class="center">
-</p>
 ![fe0](https://user-images.githubusercontent.com/42706447/173233204-512982ae-0e63-469d-b785-8ef10c553189.png)
 
 #### Layers
