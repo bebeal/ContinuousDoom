@@ -9,7 +9,7 @@ This agent plays the game using similar input devices as humans play the game wi
 
 ## The Environment
 
-I'll be using [VizDoom](https://arxiv.org/pdf/1809.03470.pdf) which is essentially a contained little Doom emulator that allows for customization and easy control. It includes a multitude of scenarios that have particular tasks and goals for your agent to solve. I made a (overly complicated) gym wrapper to simplify it's internal parameter configuration. Available here if interested [VizDoomGym](https://github.com/bebeal/VizDoomGym)
+I'll be using [VizDoom](https://arxiv.org/pdf/1809.03470.pdf) which is essentially a contained little Doom emulator that allows for customization and easy control. It includes a multitude of scenarios that have particular tasks and goals for your agent to solve. I made a (overly complicated) gym wrapper to simplify it's internal parameter configuration. Also available here if interested [VizDoomGym](https://github.com/bebeal/VizDoomGym)
 
 ### Defend The Center
 
@@ -34,7 +34,7 @@ Additionally, we are using an actor-critic style agent where the actor and the c
 The model consists of 3 main components, a feature extractor, a critic, and an actor. The feature extractor takes in the state of the environment and outputs a feature vector. During training the feature vector is passed to both the critic, which outputs a value prediction of "how good" it is to be in the current state, and the actor, which outputs the next action to take in the environment.
 
 <figure>
-<img src="/misc/ac.png" class="center" style="width: 50% !important">
+<img src="misc/ac.png" class="center" style="width: 50% !important">
 </figure>
 
 The main idea behind an actor critic model is that critic parametrizes the value function $V(s)$ which can be used to critique the actor and the actor parametrizes the policy $\pi$ which determines how to act in the environment.
@@ -44,7 +44,7 @@ The main idea behind an actor critic model is that critic parametrizes the value
 The feature extractor is mostly a convolutional network, with residual connections, and a final linear/flattening layer to form the feature vector.
 
 <figure>
-<img src="/misc/fe0.png" class="center" style="width: 50% !important">
+<img src="misc/fe0.png" class="center" style="width: 50% !important">
 </figure>
 
 #### Layers
@@ -78,7 +78,7 @@ The feature extractor is mostly a convolutional network, with residual connectio
 The critic is a small linear network.
 
 <figure>
-<img src="/misc/critic0.png" class="center" style="width: 30% !important">
+<img src="misc/critic0.png" class="center" style="width: 30% !important">
 </figure>
 
 #### Critic Loss
@@ -119,7 +119,7 @@ $$
 The actor consists of two modules, one that corresponds to a categorical actor which predicts which button to press (essentially which key to press on the keyboard and/or whether or not to click the mouse button), and a gaussian actor which predicts how to move the mouse. Both modules are small linear networks.
 
 <figure>
-<img src="/misc/actor0.png" class="center" style="width: 40% !important">
+<img src="misc/actor0.png" class="center" style="width: 40% !important">
 </figure>
 
 #### Actor Loss
@@ -185,10 +185,10 @@ Where $S_{\text{gactor}}$ is the entropy for the gaussian distribution: $-(\frac
 The state space, like typical RL environments, consist of multiple observation frames "stacked" together to give the agent a temporal perspective of the environment. The frames are greyscaled which gives the shape of $[H, W]$ and finally 4 of them are stacked together to make a shape of $[4, H, W]$. This is the only input to our model. Here is an actual example of exactly what the agent is given to work with.
 
 <figure>
-<img src="/misc/o0.png" class="center" style="width: 49%">
-<img src="/misc/o1.png" class="center" style="width: 49%">
-<img src="/misc/o2.png" class="center" style="width: 49%">
-<img src="/misc/o3.png" class="center" style="width: 49%">
+<img src="misc/o0.png" class="center" style="width: 49%">
+<img src="misc/o1.png" class="center" style="width: 49%">
+<img src="misc/o2.png" class="center" style="width: 49%">
+<img src="misc/o3.png" class="center" style="width: 49%">
 </figure>
 
 ### Action Space

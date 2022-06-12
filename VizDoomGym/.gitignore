@@ -1,7 +1,0 @@
-**/.idea/*
-**/__pycache__/*
-src/scenarios
-**/scenarios
-**/_vizdoom/*
-**/_vizdoom.ini
-scenarios

@@ -19,7 +19,7 @@ def eval_agent(config, agent, logger):
     device = config.device
     map_discrete = utils.base_buttons_with_concat(5, [])
 
-    env = DoomEnv(config='defend_the_center.cfg', frame_skip=config.frame_skip, down_sample=config.down_sample, frame_stack=config.frame_stack, multiple_buttons=True)
+    env = DoomEnv(config="defend_the_center.cfg", frame_skip=config.frame_skip, down_sample=config.down_sample, frame_stack=config.frame_stack, multiple_buttons=True)
     timeout = 1024
 
     total_rewards = []
@@ -49,8 +49,8 @@ def eval_agent(config, agent, logger):
     mean_reward = torch.tensor(total_rewards).float().mean().item()
     mean_length = torch.tensor(total_lengths).float().mean().item()
 
-    logger.add_scalar('eval/mean_reward', mean_reward, logger.total_time)
-    logger.add_scalar('eval/mean_length', mean_length, logger.total_time)
+    logger.add_scalar("eval/mean_reward", mean_reward, logger.total_time)
+    logger.add_scalar("eval/mean_length", mean_length, logger.total_time)
 
     env.close()
     agent.train()
@@ -59,9 +59,9 @@ def eval_agent(config, agent, logger):
 def train(config):
     os.makedirs(config.log_dir, exist_ok=True)
     # shutil.rmtree(path.join(config.log_dir, 'train2'), ignore_errors=True)
-    logger = tb.SummaryWriter(path.join(config.log_dir, 'train19'), flush_secs=1)
+    logger = tb.SummaryWriter(path.join(config.log_dir, "train2"), flush_secs=1)
     map_discrete = utils.base_buttons_with_concat(5, [])
-    env = DoomEnv(config='defend_the_center.cfg', frame_skip=config.frame_skip, down_sample=config.down_sample, frame_stack=config.frame_stack, multiple_buttons=True)
+    env = DoomEnv(config="defend_the_center.cfg", frame_skip=config.frame_skip, down_sample=config.down_sample, frame_stack=config.frame_stack, multiple_buttons=True)
     agent = ActorCritic(env.observation_space.shape[0], h_dim=512, num_discrete=len(map_discrete), num_continuous=1, lr=config.lr, T_max=((config.end // config.update_steps) * (config.update_steps // config.mini_batch_size)) * config.k_epochs, log_std_init=config.log_std_init, feature_extractor=ConvFeatureExtractor)
     agent = agent.to(config.device)
     ppo = PPO(logger=logger, k_epochs=config.k_epochs, mini_batch_size=config.mini_batch_size, entropy_coeff=config.entropy_coeff, value_coeff=config.value_coeff, policy_clip=config.clip_param, value_clip=config.value_clip, device=config.device)
@@ -94,8 +94,8 @@ def train(config):
             episode_reward += reward
 
             observation = next_observation
-        logger.add_scalar('train/episode_reward', episode_reward, epoch)
-        logger.add_scalar('train/episode_length', episode_length, epoch)
+        logger.add_scalar("train/episode_reward", episode_reward, epoch)
+        logger.add_scalar("train/episode_length", episode_length, epoch)
         mean_rew.append(episode_reward)
         mean_len.append(episode_length)
 
@@ -114,20 +114,20 @@ def train(config):
             ppo.update(agent, batch)
             train_time = 0
             memory.reset()
-            logger.add_scalar('train/mean_episode_reward', torch.tensor(mean_rew).float().mean().item(), logger.total_time)
-            logger.add_scalar('train/mean_episode_len', torch.tensor(mean_len).float().mean().item(), logger.total_time)
+            logger.add_scalar("train/mean_episode_reward", torch.tensor(mean_rew).float().mean().item(), logger.total_time)
+            logger.add_scalar("train/mean_episode_len", torch.tensor(mean_len).float().mean().item(), logger.total_time)
             if agent.scheduler:
-                logger.add_scalar('train/lr', agent.scheduler.get_last_lr()[0], logger.total_time)
+                logger.add_scalar("train/lr", agent.scheduler.get_last_lr()[0], logger.total_time)
             mean_rew = []
             mean_len = []
 
         if epoch % config.every == 0:
             eval_agent(config, agent, logger)
-            torch.save(agent.state_dict(), path.join(config.log_dir, 'agent.pt'))
+            torch.save(agent.state_dict(), path.join(config.log_dir, "agent.pt"))
 
         epoch += 1
 
-    torch.save(agent.state_dict(), path.join(config.log_dir, 'final_agent.pt'))
+    torch.save(agent.state_dict(), path.join(config.log_dir, "final_agent.pt"))
 
 
 if __name__ == '__main__':

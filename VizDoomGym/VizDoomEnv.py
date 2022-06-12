@@ -169,12 +169,6 @@ class DoomEnv(gym.Env):
         else:
             return self.isopen
 
-    def get_frame(self):
-        return self.__build_human_render_image()
-
-    def advance_frame(self):
-        self.__append_observation_buffers()
-
     def __build_human_render_image(self):
         """
         Stack all available buffers into one for human consumption
