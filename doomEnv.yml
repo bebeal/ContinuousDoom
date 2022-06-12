@@ -128,7 +128,6 @@ dependencies:
   - torchaudio=0.10.1=py38_cu113
   - torchvision=0.11.2=py38_cu113
   - tqdm=4.62.3=pyhd3eb1b0_1
-  - transformers=4.11.3=py_0
   - typing-extensions=3.10.0.2=hd3eb1b0_0
   - typing_extensions=3.10.0.2=pyh06a4308_0
   - wheel=0.37.0=pyhd3eb1b0_1
