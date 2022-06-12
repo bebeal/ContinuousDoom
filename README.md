@@ -33,9 +33,7 @@ Additionally, we are using an actor-critic style agent where the actor and the c
 
 The model consists of 3 main components, a feature extractor, a critic, and an actor. The feature extractor takes in the state of the environment and outputs a feature vector. During training the feature vector is passed to both the critic, which outputs a value prediction of "how good" it is to be in the current state, and the actor, which outputs the next action to take in the environment.
 
-<figure>
-<img src="misc/ac.png" class="center" style="width: 50% !important">
-</figure>
+![ac](https://user-images.githubusercontent.com/42706447/173233189-be2b805a-f96c-42ce-975d-ac424cc515e6.png)
 
 The main idea behind an actor critic model is that critic parametrizes the value function $V(s)$ which can be used to critique the actor and the actor parametrizes the policy $\pi$ which determines how to act in the environment.
 
@@ -43,9 +41,7 @@ The main idea behind an actor critic model is that critic parametrizes the value
 
 The feature extractor is mostly a convolutional network, with residual connections, and a final linear/flattening layer to form the feature vector.
 
-<figure>
-<img src="misc/fe0.png" class="center" style="width: 50% !important">
-</figure>
+![fe0](https://user-images.githubusercontent.com/42706447/173233204-512982ae-0e63-469d-b785-8ef10c553189.png)
 
 #### Layers
 
@@ -77,9 +73,7 @@ The feature extractor is mostly a convolutional network, with residual connectio
 
 The critic is a small linear network.
 
-<figure>
-<img src="misc/critic0.png" class="center" style="width: 30% !important">
-</figure>
+![critic0](https://user-images.githubusercontent.com/42706447/173233217-3f19b2af-907a-4920-baf4-6c40c53ee193.png)
 
 #### Critic Loss
 
@@ -118,9 +112,7 @@ $$
 
 The actor consists of two modules, one that corresponds to a categorical actor which predicts which button to press (essentially which key to press on the keyboard and/or whether or not to click the mouse button), and a gaussian actor which predicts how to move the mouse. Both modules are small linear networks.
 
-<figure>
-<img src="misc/actor0.png" class="center" style="width: 40% !important">
-</figure>
+![actor0](https://user-images.githubusercontent.com/42706447/173233222-dea73ba5-5743-408e-9d9f-e320cb6fec13.png)
 
 #### Actor Loss
 
@@ -184,11 +176,15 @@ Where $S_{\text{gactor}}$ is the entropy for the gaussian distribution: $-(\frac
 
 The state space, like typical RL environments, consist of multiple observation frames "stacked" together to give the agent a temporal perspective of the environment. The frames are greyscaled which gives the shape of $[H, W]$ and finally 4 of them are stacked together to make a shape of $[4, H, W]$. This is the only input to our model. Here is an actual example of exactly what the agent is given to work with.
 
-<figure>
-<img src="misc/o0.png" class="center" style="width: 49%">
-<img src="misc/o1.png" class="center" style="width: 49%">
-<img src="misc/o2.png" class="center" style="width: 49%">
-<img src="misc/o3.png" class="center" style="width: 49%">
+<figure><div>
+<img src="https://user-images.githubusercontent.com/42706447/173233261-93c4270b-485d-4a82-b024-fec0a3b5f204.png" class="center" style="width: 49% !important">
+<img src="https://user-images.githubusercontent.com/42706447/173233263-7e33ea3a-99ca-49cd-a305-7ad3c251ae91.png" class="center" style="width: 49% !important">
+ </div>
+ </figure>
+<figure><div>
+<img src="https://user-images.githubusercontent.com/42706447/173233264-a16f73a8-d217-42e8-889a-8f3f6059f9b5.png" class="center" style="width: 49% !important">
+<img src="https://user-images.githubusercontent.com/42706447/173233266-43bd34ff-9500-46e1-ac7b-95b964ad921f.png" class="center" style="width: 49% !important">
+ </div>
 </figure>
 
 ### Action Space
@@ -232,51 +228,57 @@ After tweaking hyperparameters a little bit you can produce an agent that achiev
 
 ### Losses 
 
+
 <div>
-   <img src="misc/Actor_Loss.png" style="width: 49% !important">
-   <img src="misc/Critic_Loss.png" style="width: 49% !important">
+   <img src="https://user-images.githubusercontent.com/42706447/173233289-e6108f70-0ce3-4031-9718-b81624732ae5.png" style="width: 49% !important">
+   <img src="https://user-images.githubusercontent.com/42706447/173233290-1b65fb1c-3004-40bf-b21c-f408ae921c47.png" style="width: 49% !important">
 </div>
 <div>
-   <img src="misc/Entropy_Loss.png" style="width: 49% !important">
-   <img src="misc/Total_Loss.png" style="width: 49% !important">
+   <img src="https://user-images.githubusercontent.com/42706447/173233291-d7ec2565-e464-4e84-b3cc-55935d1e9a5e.png" style="width: 49% !important">
+   <img src="https://user-images.githubusercontent.com/42706447/173233292-4af73507-b82d-4ed1-8514-089220102346.png" style="width: 49% !important">
 </div>
 
 ### Training
 
 <div>
-   <img src="misc/learning_rate.png" style="width: 49% !important">
-   <img src="misc/Standard_Deviation_of_Gaussian_Actor.png" style="width: 49% !important">
+   <img src="https://user-images.githubusercontent.com/42706447/173233321-b0affbc9-884a-49a0-8510-64b1e44e4724.png" style="width: 49% !important">
+   <img src="https://user-images.githubusercontent.com/42706447/173233323-c2899923-7439-4645-8767-80729e7de9d7.png" style="width: 49% !important">
 </div>
 <div>
-   <img src="misc/Average_Number_of_Frames_per_Episode_(Training).png" style="width: 49% !important">
-   <img src="misc/Average_Reward_per_Episode_(Training).png" style="width: 49% !important">
+   <img src="https://user-images.githubusercontent.com/42706447/173233324-1d920ffb-ca2c-42ab-becb-8cb91a4eb78f.png" style="width: 49% !important">
+   <img src="https://user-images.githubusercontent.com/42706447/173233325-ca704545-664b-4872-8cac-c60a435fb60d.png" style="width: 49% !important">
 </div>
 
 ### Evaluation
 
 <div>
-   <img src="misc/Average_Number_of_Frames_per_Episode_(Eval).png" style="width: 49% !important">
-   <img src="misc/Average_Reward_per_Episode_(Eval).png" style="width: 49% !important">
+   <img src="https://user-images.githubusercontent.com/42706447/173233347-e006033b-5ee6-4e9d-8868-555742399142.png" style="width: 49% !important">
+   <img src="https://user-images.githubusercontent.com/42706447/173233348-c10b07b3-a06c-40a0-8095-81d4e8ca1ef0.png" style="width: 49% !important">
 </div>
 
 
 Here is the agent playing 3 episodes. It pretty much just becomes an aimbot, and has a particular preference for walking backwards. I show all 4 views of the environment which consist of the screen buffer, a depth buffer, a labeled buffer, and the map. The agent still only sees a sliding window of 4 frames of the screen buffer, which are greyscaled and transformed accordingly, these views are just for fun.
 
-<video width="95%" controls>
-    <source src="" type="video/mp4">
-</video>
+
+https://user-images.githubusercontent.com/42706447/173233122-ac993c3a-fdeb-4137-ba5a-47b59f7ce14f.mp4
+
+
+
 
 Here is the agents perspective:
 
-<video width="95%" controls>
-    <source src="" type="video/mp4">
-</video>
+
+https://user-images.githubusercontent.com/42706447/173233160-9d0d0004-482b-4ad8-bda2-11dde53cc0a8.mp4
+
+
 
 Since I technically stop the episode once the agent is out of ammo for 4 steps, you will see scores of 26, but this is just because of this timeout feature I have, otherwise the agent continued to run around the map like this at the end of the game:
 
-<video width="95%" controls>
-    <source src="" type="video/mp4">
-</video>
+
+
+https://user-images.githubusercontent.com/42706447/173233156-9ca7c885-8c39-4a19-a6b4-fcf92de92366.mp4
+
+
 
 Until eventually they died, and for the majority of training this experience isn't useful (thus the timeout feature).
 
