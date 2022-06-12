@@ -1,0 +1,11 @@
+log/
+__pycache__/
+model_saves/
+_vizdoom/
+VizDoomGymRecorder/
+log2/
+.idea/
+_vizdoom.ini
+train_others.py
+record.py
+misc/
