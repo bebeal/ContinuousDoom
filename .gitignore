@@ -9,3 +9,4 @@ _vizdoom.ini
 train_others.py
 record.py
 misc/
+*.ipynb
