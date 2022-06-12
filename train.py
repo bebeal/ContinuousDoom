@@ -61,10 +61,10 @@ def train(config):
     logger = tb.SummaryWriter(path.join(config.log_dir, "train"), flush_secs=1)
     map_discrete = utils.base_buttons_with_concat(5, [])
     env = DoomEnv(config="defend_the_center.cfg", frame_skip=config.frame_skip, down_sample=config.down_sample, frame_stack=config.frame_stack, multiple_buttons=True)
-    num_updates = ((config.end // config.num_frames_per_update) * (config.num_frames_per_update // config.mini_batch_size)) * config.k_epochs
+    num_updates = ((config.total_frames // config.num_frames_per_update) * (config.num_frames_per_update // config.mini_batch_size)) * config.k_epochs
     agent = ActorCritic(env.observation_space.shape[0], h_dim=config.hdim, num_discrete=len(map_discrete), num_continuous=1, lr=config.lr, T_max=num_updates, log_std_init=config.log_std_init, weight_decay=config.weight_decay, feature_extractor=ConvFeatureExtractor)
     agent = agent.to(config.device)
-    ppo = PPO(logger=logger, k_epochs=config.k_epochs, mini_batch_size=config.mini_batch_size, entropy_coeff=config.entropy_coeff, value_coeff=config.value_coeff, actor_coeff=config.actor_coeff, grad_clip=config.grad_clip, policy_clip=config.clip_param, value_clip=config.value_clip, device=config.device)
+    ppo = PPO(logger=logger, k_epochs=config.k_epochs, mini_batch_size=config.mini_batch_size, entropy_coeff=config.entropy_coeff, value_coeff=config.value_coeff, actor_coeff=config.actor_coeff, grad_clip=config.grad_clip, policy_clip=config.clip_param, value_clip_param=config.value_clip_param, device=config.device)
     gae = GAE(config.gamma, config.lmbda)
     memory = MemoryBuffer(config.num_frames_per_update, env.observation_space.shape, device=config.device)
 
@@ -73,7 +73,7 @@ def train(config):
     logger.updates = 0
     train_time = 0
     mean_rew, mean_len = [], []
-    while logger.total_time < config.end:
+    while logger.total_time < config.total_frames:
         observation = env.reset()
         episode_length = 0
         episode_reward = 0

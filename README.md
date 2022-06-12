@@ -230,15 +230,53 @@ I also hypothesized one could make a variation of the algorithm where each butto
 
 After tweaking hyperparameters a little bit you can produce an agent that achieves, on average, a perfect score for the Defend the Center scenario. This score being 25 due to the agent only being given 26 ammo and thus can only kill 26 monsters, earning 26 points, before dying which takes away 1 point.
 
-* graphs *
+### Losses 
+
+<div>
+   <img src="misc/Actor_Loss.png" style="width: 49% !important">
+   <img src="misc/Critic_Loss.png" style="width: 49% !important">
+</div>
+<div>
+   <img src="misc/Entropy_Loss.png" style="width: 49% !important">
+   <img src="misc/Total_Loss.png" style="width: 49% !important">
+</div>
+
+### Training
+
+<div>
+   <img src="misc/learning_rate.png" style="width: 49% !important">
+   <img src="misc/Standard_Deviation_of_Gaussian_Actor.png" style="width: 49% !important">
+</div>
+<div>
+   <img src="misc/Average_Number_of_Frames_per_Episode_(Training).png" style="width: 49% !important">
+   <img src="misc/Average_Reward_per_Episode_(Training).png" style="width: 49% !important">
+</div>
+
+### Evaluation
+
+<div>
+   <img src="misc/Average_Number_of_Frames_per_Episode_(Eval).png" style="width: 49% !important">
+   <img src="misc/Average_Reward_per_Episode_(Eval).png" style="width: 49% !important">
+</div>
+
 
 Here is the agent playing 3 episodes. It pretty much just becomes an aimbot, and has a particular preference for walking backwards. I show all 4 views of the environment which consist of the screen buffer, a depth buffer, a labeled buffer, and the map. The agent still only sees a sliding window of 4 frames of the screen buffer, which are greyscaled and transformed accordingly, these views are just for fun.
 
-* video *
+<video width="95%" controls>
+    <source src="" type="video/mp4">
+</video>
+
+Here is the agents perspective:
+
+<video width="95%" controls>
+    <source src="" type="video/mp4">
+</video>
 
 Since I technically stop the episode once the agent is out of ammo for 4 steps, you will see scores of 26, but this is just because of this timeout feature I have, otherwise the agent continued to run around the map like this at the end of the game:
 
-* gif *
+<video width="95%" controls>
+    <source src="" type="video/mp4">
+</video>
 
 Until eventually they died, and for the majority of training this experience isn't useful (thus the timeout feature).
 
@@ -251,20 +289,22 @@ RL in general is extremely sensitive to hyperparameters, moreso than other subfi
 ## Hyperparameters
 
 * Number of frames per update: 4096
-* Maximum number of frames to train on: 4,000,000
+* Maximum number of frames to train on: 4000000  (Only ~1.5M necessary for optimal policy)
 * Maximum episode length: 512
 * Initial Learning Rate: 7e-4
+* Learning Rate Scheduler: Cosine, annealed to 0 over entire training time (Not necessary)
 * GAE Gamma $\gamma$: 0.99
 * GAE Lambda $\lambda$: 0.95
 * Actor Clip Parameter $\epsilon_a$: 0.2
-* Critic Clip Parameter $\epsilon_c$: 1000
+* Critic/Value Clip Parameter $\epsilon_c$: 1000
 * Mini batch size: 256
 * k epochs: 1
-* Actor Co-Efficient $\eta_a$: 0.5
 * Entropy Co-Efficient $\eta_s$: 0.00001
 * Value Co-Efficient $\eta_c$: 1
-* Down Sample: (240, 320)
+* Actor Co-Efficient $\eta_a$: 0.5
+* Down Sample: (240, 320) (i.e. no downsampling)
 * Frame Skip: 4
 * Frame Stack: 4
+* Grad norm clip: 0.5
 * Optimizer: AdamW
 * Weight Decay: 1e-6

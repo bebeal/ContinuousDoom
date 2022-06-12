@@ -40,7 +40,7 @@ class GAE:
 
 
 class PPO:
-    def __init__(self, logger, k_epochs, mini_batch_size, entropy_coeff, value_coeff, actor_coeff, grad_clip=0.5, policy_clip=-1, value_clip=-1, device=torch.device("cpu")):
+    def __init__(self, logger, k_epochs, mini_batch_size, entropy_coeff, value_coeff, actor_coeff, grad_clip=0.5, policy_clip=-1, value_clip_param=-1, device=torch.device("cpu")):
         super().__init__()
         self.logger = logger
         self.k_epochs = k_epochs
@@ -50,7 +50,7 @@ class PPO:
         self.actor_coeff = actor_coeff
         self.grad_clip = grad_clip
         self.policy_clip = policy_clip
-        self.value_clip = value_clip
+        self.value_clip_param = value_clip_param
         self.device = device
 
     def get_actor_loss(self, new_log_probs, log_probs, advantages):
@@ -65,8 +65,8 @@ class PPO:
     def get_value_loss(self, values, returns, old_values):
         # could try huber, less sensitive to outliers, but "outliers" can occur as a good training signal (new exploration)
         l1 = F.mse_loss(returns, values)
-        if self.value_clip != -1:
-            l2 = F.mse_loss(returns, old_values + torch.clip(values - old_values, -self.value_clip, self.value_clip))
+        if self.value_clip_param != -1:
+            l2 = F.mse_loss(returns, old_values + torch.clip(values - old_values, -self.value_clip_param, self.value_clip_param))
             return torch.max(l1, l2)
         else:
             return l1
