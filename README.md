@@ -4,7 +4,7 @@ Learning to play Doom with deep reinforcement learning using a continuous action
 
 This agent plays the game using similar input devices as humans play the game with, a keyboard (categorical distribution) and mouse (continuous distribution).
 
-* [Full Project Page](https://www.cs.utexas.edu/~bebeal/docs/projects/doom-learning/)
+* [Full Project Page](https://www.cs.utexas.edu/~bebeal/docs/projects/doom-learning/) (Coming soon<sup>TM</sup>)
 * [Downloadable Weights](https://drive.google.com/file/d/1XvftbgcGp8dwgWLwqJRd8W2ftGFaVzjc/view?usp=sharing)
 * [Colab Script using trained agent](https://colab.research.google.com/drive/1VcGCq4awrS8Icl8xTWKS7qb0WsNTkpZB?usp=sharing)
 
