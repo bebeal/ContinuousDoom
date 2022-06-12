@@ -5,7 +5,7 @@ Learning to play Doom with deep reinforcement learning using a continuous action
 This agent plays the game using similar input devices as humans play the game with, a keyboard (categorical distribution) and mouse (continuous distribution).
 
 * [Full Project Page](https://www.cs.utexas.edu/~bebeal/docs/projects/doom-learning/)
-* [Downloadable Weights + Collab Script to run]()
+* [Downloadable Weights + Collab Script to run](https://drive.google.com/drive/folders/1TXdpe3Hs_Jgi3e_RtPjDLEtK3tlLU-f3?usp=sharing)
 
 ## The Environment
 
@@ -226,8 +226,7 @@ I also hypothesized one could make a variation of the algorithm where each butto
 
 After tweaking hyperparameters a little bit you can produce an agent that achieves, on average, a perfect score for the Defend the Center scenario. This score being 25 due to the agent only being given 26 ammo and thus can only kill 26 monsters, earning 26 points, before dying which takes away 1 point.
 
-### Losses 
-
+### Losses
 
 <div>
    <img src="https://user-images.githubusercontent.com/42706447/173233289-e6108f70-0ce3-4031-9718-b81624732ae5.png" style="width: 49% !important">
@@ -256,29 +255,17 @@ After tweaking hyperparameters a little bit you can produce an agent that achiev
    <img src="https://user-images.githubusercontent.com/42706447/173233348-c10b07b3-a06c-40a0-8095-81d4e8ca1ef0.png" style="width: 49% !important">
 </div>
 
-
 Here is the agent playing 3 episodes. It pretty much just becomes an aimbot, and has a particular preference for walking backwards. I show all 4 views of the environment which consist of the screen buffer, a depth buffer, a labeled buffer, and the map. The agent still only sees a sliding window of 4 frames of the screen buffer, which are greyscaled and transformed accordingly, these views are just for fun.
-
 
 https://user-images.githubusercontent.com/42706447/173233122-ac993c3a-fdeb-4137-ba5a-47b59f7ce14f.mp4
 
-
-
-
 Here is the agents perspective:
-
 
 https://user-images.githubusercontent.com/42706447/173233160-9d0d0004-482b-4ad8-bda2-11dde53cc0a8.mp4
 
-
-
 Since I technically stop the episode once the agent is out of ammo for 4 steps, you will see scores of 26, but this is just because of this timeout feature I have, otherwise the agent continued to run around the map like this at the end of the game:
 
-
-
 https://user-images.githubusercontent.com/42706447/173233156-9ca7c885-8c39-4a19-a6b4-fcf92de92366.mp4
-
-
 
 Until eventually they died, and for the majority of training this experience isn't useful (thus the timeout feature).
 
