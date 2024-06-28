@@ -8,6 +8,8 @@ This agent plays the game using similar input devices as humans play the game wi
 * [Downloadable Weights](https://drive.google.com/file/d/1XvftbgcGp8dwgWLwqJRd8W2ftGFaVzjc/view?usp=sharing)
 * [Colab Script using trained agent](https://colab.research.google.com/drive/1VcGCq4awrS8Icl8xTWKS7qb0WsNTkpZB?usp=sharing)
 
+Scale this to modern Doom VR and pair it with a VR headset and I think this turns into a money printer backed by an alphabet
+
 ## The Environment
 
 I'll be using [VizDoom](https://arxiv.org/pdf/1809.03470.pdf) which is essentially a contained little Doom emulator that allows for customization and easy control. It includes a multitude of scenarios that have particular tasks and goals for your agent to solve. I made a (overly complicated) gym wrapper to simplify it's internal parameter configuration. Also available here if interested [VizDoomGym](https://github.com/bebeal/VizDoomGym)
