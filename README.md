@@ -278,12 +278,6 @@ https://user-images.githubusercontent.com/42706447/173233156-9ca7c885-8c39-4a19-
 
 Until eventually they died, and for the majority of training this experience isn't useful (thus the timeout feature).
 
-## Conclusion
-
-Overall I'm happy with this performance, but would like to extend this method to work for all doom environments and make a generalized doom agent that can play the game a super-human level using a continuous action space that is similar to a human. But for now this is good. Additionally I would like to try out a SAC version, instead of PPO, of this same technique
-
-RL in general is extremely sensitive to hyperparameters, moreso than other subfields in which NNs dominate like NLP and Computer Vision. This algorithm in particular can be very very sensitive and really hit-or-miss. Particularly involving how fast the critic network learns, which is dependent on a multitude of hyperparameters such as the learning rate, weight decay since we're using an AdamW optimizer which interacts with the learning rate in interesting ways, value coefficient (which is multiplied by the critic loss to scale it's importance in comparison to the other loss terms), the value epsilon clip parameter which used in 1 of the 2 loss terms for the critic network, and the critic loss itself which can altered in various ways. I will in the future experiment more with this and hopefully draw more useful conclusions but for now just know this isn't a very robust technique.
-
 ## Hyperparameters
 
 * Number of frames per update: 4096
