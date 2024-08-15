@@ -124,7 +124,11 @@ The actor consists of two modules, one that corresponds to a categorical actor w
 The actor loss corresponds to the PPO-clip loss with the following objective function:
 
 $$
-L_{\text{actor}}(\theta) = \mathbb{E}_t = \text{min} \left( \frac{\pi_{\theta}(a|s)}{\pi_{\theta_k}(a|s)} A^{\pi_{\theta_k}}(s, a), g(\epsilon_a , A^{\pi_{\theta_k}}(s, a)) \right)
+L_{\text{actor}}(\theta) = E_t = \min \left( \\
+\begin{array}{l}
+\frac{\pi_{\theta}(a|s)}{\pi_{\theta_k}(a|s)} A^{\pi_{\theta_k}}(s, a), g(\epsilon_a, A^{\pi_{\theta_k}}(s, a))
+\end{array}
+\right)
 $$
 
 where $g$ is defined as:
